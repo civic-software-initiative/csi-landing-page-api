@@ -56,11 +56,11 @@ package:
     - ./bin/**
 
 functions:
-  hello:
-    handler: bin/hello
+  contact-us:
+    handler: bin/contact-us
     events:
       - httpApi:
-          path: /hello
+          path: /contact-us
           method: get
 
 #    The following are a few example events you can configure
