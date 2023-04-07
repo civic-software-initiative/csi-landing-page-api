@@ -20,6 +20,8 @@ service: csi-landing-page-api
 # Check out our docs for more details
 frameworkVersion: '3'
 
+useDotenv: true
+
 provider:
   name: aws
   runtime: go1.x
@@ -62,6 +64,10 @@ functions:
       - httpApi:
           path: /contact-us
           method: post
+    environment:
+      - SENDER: ${env:SENDER}
+      - APP_PASSWORD: ${env:APP_PASSWORD}
+      - RECEIVER: ${env:RECEIVER}
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
