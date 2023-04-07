@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -20,8 +21,20 @@ import (
 type Response events.APIGatewayProxyResponse
 type Request events.APIGatewayProxyRequest
 
+type ContactRequest struct {
+	Name         *string `json:"name"`
+	EmailAddress *string `json:"emailAddress"`
+	Message      *string `json:"message"`
+}
+
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(ctx context.Context, request Request) (Response, error) {
+	var contactRequest ContactRequest
+	err := json.Unmarshal([]byte(request.Body), &contactRequest)
+	if err != nil {
+		return Response{StatusCode: 400}, err
+	}
+
 	sender := os.Getenv("SENDER")
 	recipient := os.Getenv("RECIPIENT")
 	region := os.Getenv("REGION")
@@ -35,16 +48,20 @@ func Handler(ctx context.Context, request Request) (Response, error) {
 		return Response{StatusCode: 500}, err
 	}
 
-	subject := "SES Test Email"
+	subject := "Contact Us Request: " + *contactRequest.Name
 	charset := "UTF-8"
 
 	// The HTML body for the email.
-	htmlBody := "<h1>Amazon SES Test Email (AWS SDK for Go)</h1><p>This email was sent with " +
-		"<a href='https://aws.amazon.com/ses/'>Amazon SES</a> using the " +
-		"<a href='https://aws.amazon.com/sdk-for-go/'>AWS SDK for Go</a>.</p>"
+	htmlBody := "<h1>Contact Form Submission</h1>" +
+		"<p>Name: " + *contactRequest.Name + "</p>" +
+		"<p>Email: " + *contactRequest.EmailAddress + "</p>" +
+		"<p>Message: " + *contactRequest.Message + "</p>"
 
 	//The email body for recipients with non-HTML email clients.
-	textBody := "This email was sent with Amazon SES using the AWS SDK for Go."
+	textBody := "Contact Form Submission\n" +
+		"Name: " + *contactRequest.Name + "\n" +
+		"Email: " + *contactRequest.EmailAddress + "\n" +
+		"Message: " + *contactRequest.Message + "\n"
 
 	svc := ses.New(sess)
 
