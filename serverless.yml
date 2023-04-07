@@ -23,6 +23,13 @@ frameworkVersion: '3'
 provider:
   name: aws
   runtime: go1.x
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - 'ses:SendEmail'
+          Resource: '*'
 
 # you can overwrite defaults here
 #  stage: dev

@@ -1,10 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"net/smtp"
 	"os"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -25,7 +23,7 @@ type Request events.APIGatewayProxyRequest
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(ctx context.Context, request Request) (Response, error) {
 	sender := os.Getenv("SENDER")
-	recipient := []string{os.Getenv("RECIPIENT")}
+	recipient := os.Getenv("RECIPIENT")
 	region := os.Getenv("REGION")
 
 	sess, err := session.NewSession(&aws.Config{
@@ -104,7 +102,7 @@ func Handler(ctx context.Context, request Request) (Response, error) {
 	resp := Response{
 		StatusCode:      200,
 		IsBase64Encoded: false,
-		Body:            result,
+		Body:            *result.MessageId,
 		Headers: map[string]string{
 			"Content-Type": "application/json",
 		},
