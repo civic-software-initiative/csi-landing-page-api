@@ -23,12 +23,14 @@ type Request events.APIGatewayProxyRequest
 
 type ContactRequest struct {
 	Name         *string `json:"name"`
-	EmailAddress *string `json:"emailAddress"`
+	EmailAddress *string `json:"email"`
 	Message      *string `json:"message"`
 }
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler(ctx context.Context, request Request) (Response, error) {
+	fmt.Println("request: ", request.Body)
+
 	var contactRequest ContactRequest
 	err := json.Unmarshal([]byte(request.Body), &contactRequest)
 	if err != nil {
